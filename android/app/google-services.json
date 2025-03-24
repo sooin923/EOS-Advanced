@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "677411295658",
+    "project_id": "bucketlistwithfirebase-f7935",
+    "storage_bucket": "bucketlistwithfirebase-f7935.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677411295658:android:66ed7e2ca04bcbcaf71bd3",
+        "android_client_info": {
+          "package_name": "com.example.bucket_list_with_firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdKt-QdhFwu95nXDfy9qV2F7GQ4cCgaLw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
