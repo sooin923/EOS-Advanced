@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "607184963077",
+    "project_id": "eosadvancedlogin",
+    "storage_bucket": "eosadvancedlogin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:607184963077:android:aaeaf6ef93d78a584cfe6c",
+        "android_client_info": {
+          "package_name": "com.example.eos_advance_login"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVfiW4qMBEDEBk2TqIdjgjFW4PF7ifWjM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
