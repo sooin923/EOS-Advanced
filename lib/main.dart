@@ -9,7 +9,7 @@ import 'package:eos_advance_login/theme/light_theme.dart';
 import 'package:eos_advance_login/theme/foundation/app_theme.dart';
 import 'package:provider/provider.dart';
 
-// TODO: [과제 1-1] Firebase 초기화 코드 구현 (finish)
+// TODO: [Week2 과제 1-1] Firebase 초기화 코드 구현 (finish)
 /*
  * Firebase 설정 및 초기화 과제
  * 
@@ -40,6 +40,15 @@ Future<void> main() async {
   // TODO: Firebase 초기화 코드 여기에 작성
   WidgetsFlutterBinding.ensureInitialized();
 
+  // TODO: [Week3 과제 2-1] 카카오 SDK 초기화
+  /*
+   * 카카오 SDK 초기화 코드
+   * - 카카오 개발자 콘솔에서 발급받은 네이티브 앱 키를 사용하여 초기화
+   * - KakaoSdk.init(nativeAppKey: '네이티브_앱_키') 호출
+   */
+
+  // Firebase 초기화 수정
+
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform, // 필요시 주석 해제
@@ -68,7 +77,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppTheme theme = LightTheme();
 
-    // TODO: [과제 1-2] 로그인 상태에 따른 화면 분기 처리 (finish)
+    // TODO: [Week2 과제 1-2] 로그인 상태에 따른 화면 분기 처리 (finish)
     /*
      * 인증 상태 관리 과제
      * 
@@ -99,6 +108,7 @@ class MyApp extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
+            // 인증 상태 확인 중일 때 로딩 표시시
             return const Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
@@ -106,6 +116,7 @@ class MyApp extends StatelessWidget {
             );
           }
 
+          // 로그인 된 유저가 있으면 HomeScreen, 없으면 LoginScreen
           if (snapshot.hasData) {
             return const HomeScreen();
           } else {

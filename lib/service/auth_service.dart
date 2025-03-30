@@ -92,9 +92,67 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  void signOut() async {
+void signOut() async {
     // 로그아웃
-    await FirebaseAuth.instance.signOut();
-    notifyListeners(); // 로그인 상태 변경 알림림
+  }
+
+  // TODO: [Week3 과제 1-2] Google 로그인 및 Firebase 연동 메서드 구현
+  /*
+   * Google 로그인 및 Firebase 연동 메서드
+   *
+   * 구현 단계:
+   * 1. GoogleSignIn 인스턴스 생성 및 로그인 요청
+   *    - GoogleSignIn().signIn() 호출
+   *    - 사용자 계정 선택 및 권한 동의 과정 처리
+   *
+   * 2. 인증 정보 획득
+   *    - googleUser.authentication 호출하여 accessToken과 idToken 획득
+   *
+   * 3. Firebase 인증 정보 생성
+   *    - GoogleAuthProvider.credential()로 OAuthCredential 생성
+   *    - accessToken과 idToken 전달
+   *
+   * 4. Firebase 인증 완료
+   *    - FirebaseAuth.instance.signInWithCredential() 호출
+   *
+   * 5. 성공/실패 처리
+   *    - 성공 시 onSuccess 콜백 호출
+   *    - 실패 시 오류 내용에 따라 구분하여 onError 콜백 호출
+   */
+  Future<void> signInWithGoogle({
+    required Function() onSuccess,
+    required Function(String err) onError,
+  }) async {
+    // 여기에 구글 로그인 로직을 구현하세요
+  }
+
+  // TODO: [Week3 과제 2-2] 카카오 로그인 및 Firebase 연동 메서드 구현
+  /*
+   * 카카오 로그인 및 Firebase 연동 메서드
+   *
+   * 구현 단계:
+   * 1. 카카오 SDK 초기화
+   *    - KakaoSdk.init() 호출 (main.dart에서 초기화 또는 여기서)
+   *
+   * 2. 카카오 로그인 요청 및 토큰 획득
+   *    - UserApi.instance.loginWithKakaoAccount() 사용
+   *    - 토큰 발급 확인
+   *
+   * 3. Firebase Functions 호출하여 커스텀 토큰 획득
+   *    - 카카오 액세스 토큰을 Firebase 커스텀 토큰으로 교환하는 HTTP 요청
+   *    - 서버는 토큰 검증 후 Firebase 커스텀 토큰 발행
+   *
+   * 4. Firebase 인증
+   *    - FirebaseAuth.instance.signInWithCustomToken() 호출
+   *
+   * 5. 성공/실패 처리
+   *    - 성공 시 onSuccess 콜백 호출
+   *    - 실패 시 오류 내용에 따라 구분하여 onError 콜백 호출
+   */
+  Future<void> signInWithKakao({
+    required Function() onSuccess,
+    required Function(String err) onError,
+  }) async {
+    // 여기에 카카오 로그인 로직을 구현하세요
   }
 }

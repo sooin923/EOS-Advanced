@@ -58,7 +58,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // TODO: [과제 3-1] 현재 로그인한 사용자 정보 표시
+            // TODO: [Week2 과제 3-1] 현재 로그인한 사용자 정보 표시 (finish)
             /*
              * 1. 사용자 정보 가져오기:
               *    final user = FirebaseAuth.instance.currentUser;
@@ -152,7 +152,7 @@ class HomeScreen extends StatelessWidget {
 
   // 로그아웃 처리 메서드
   void _handleLogout(BuildContext context) async {
-    // TODO: [과제 3-2] Firebase Auth를 사용한 로그아웃 구현 (finish)
+    // TODO: [Week2 과제 3-2] Firebase Auth를 사용한 로그아웃 구현 (finish)
     /*
      * 로그아웃 기능 구현 과제
      * 
