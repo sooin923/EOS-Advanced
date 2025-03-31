@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eos_advance_login/screens/home_screen.dart';
 import 'package:eos_advance_login/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -250,6 +251,107 @@ class _LoginScreenState extends State<LoginScreen> {
              *    - 요청 성공/실패에 따른 피드백 제공
              *    - 오류 처리 (사용자가 존재하지 않을 경우 등)
              */
+            TextEditingController _updateEmailController =
+                TextEditingController();
+            String? errorMessage;
+
+            showDialog(
+              context: context,
+              builder: (context) {
+                return StatefulBuilder(
+                  builder: (context, setState) {
+                    return AlertDialog(
+                      title: Text("비밀번호 재설정"),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: _updateEmailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              labelText: "이메일 입력",
+                              errorText: errorMessage,
+                            ),
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        // 취소 버튼
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text("취소"),
+                        ),
+
+                        //전송 버튼 (비밀번호 재설정 요청)
+                        ElevatedButton(
+                          onPressed: () async {
+                            String email = _updateEmailController.text.trim();
+
+                            if (email.isEmpty) {
+                              setState(() => errorMessage = "이메일을 입력해주세요.");
+                              return;
+                            }
+
+                            try {
+                              //예외처리 1(실패)
+                              // Firestore에서 이메일이 존재하는지 확인
+                              // var query = await FirebaseFirestore.instance
+                              //     .collection('users')
+                              //     .where('email', isEqualTo: email)
+                              //     .get();
+
+                              // if (query.docs.isEmpty) {
+                              //   // Firestore에 해당 이메일이 없으면 에러 메시지 표시
+                              //   setState(() {
+                              //     errorMessage = "등록되지 않은 이메일입니다.";
+                              //   });
+                              //   return;
+                              // }
+
+                              // 예외처리 2(실패)
+                              // final signInMethods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+                              //   if (signInMethods.isEmpty) {
+                              //     setState(() {
+                              //       errorMessage = "존재하지 않는 이메일입니다.";
+                              //     });
+                              //     return;
+                              //   }
+
+                              await FirebaseAuth.instance
+                                  .sendPasswordResetEmail(email: email);
+
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("비밀번호 재설정 이메일을 보냈습니다.")),
+                              );
+                            } catch (e) {
+                              setState(() {
+                                if (e is FirebaseAuthException) {
+                                  switch (e.code) {
+                                    case 'user-not-found': // 사용자가 존재하지 않을 경우 - 작동 안 함..
+                                      errorMessage = "존재하지 않는 이메일입니다.";
+                                      break;
+                                    case 'invalid-email': // 이메일 형식이 잘못된 경우
+                                      errorMessage = "유효하지 않은 이메일 형식입니다.";
+                                      break;
+                                    default: // 기타 오류
+                                      errorMessage =
+                                          "비밀번호 재설정 요청 중 오류가 발생했습니다.";
+                                  }
+                                } else {
+                                  errorMessage = "알 수 없는 오류가 발생했습니다.";
+                                }
+                              });
+                            }
+                          },
+                          child: Text("전송"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            );
           },
           child: Text(
             '비밀번호 재설정',
@@ -304,7 +406,9 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               onError: (err) {
                 // 에러 발생
-                _showLoginMessage(context, '이메일');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('회원가입 실패: $err')),
+                );
               },
             );
           },
@@ -426,7 +530,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// 이메일 로그인 처리 메서드
+  /// 이메일 로그인 처리 메서드 (week2 - finish)
   void _handleEmailLogin(BuildContext context) {
     // TODO: [Week2 과제 2-1] Firebase Auth를 사용한 이메일 로그인 구현 (finish)
     /*
@@ -448,7 +552,7 @@ class _LoginScreenState extends State<LoginScreen> {
      *    - 오류 메시지를 SnackBar로 사용자에게 표시
      */
 
-    // 입력값이 비어있는지 검사사
+    // 입력값이 비어있는지 검사
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('이메일과 비밀번호를 모두 입력해주세요.')),
@@ -494,7 +598,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// 카카오 로그인 처리 메서드
+  /// 카카오 로그인 처리 메서드 (week3)
   void _handleKakaoLogin(BuildContext context) {
     // TODO: [Week3 과제 2-3] 카카오 로그인 구현
     /*
@@ -527,7 +631,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _showLoginMessage(context, '카카오');
   }
 
-  /// 구글 로그인 처리 메서드
+  /// 구글 로그인 처리 메서드 (week3)
   void _handleGoogleLogin(BuildContext context) {
     // TODO: [과제 1-3] 구글 로그인 구현
     /*
@@ -550,7 +654,26 @@ class _LoginScreenState extends State<LoginScreen> {
      *    - 오류 메시지 표시 (오류 내용에 따라 적절한 메시지)
      *    - 재시도 옵션 제공 (선택사항)
      */
-    _showLoginMessage(context, '구글');
+
+    _showLoginMessage(context, '구글글');
+
+    Provider.of<AuthService>(context, listen: false).signInWithGoogle(
+      onSuccess: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('구글 로그인 성공')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      },
+      onError: (err) {
+        // 에러 발생
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('구글 로그인 실패: $err')),
+        );
+      },
+    );
   }
 
   /// 애플 로그인 처리 메서드

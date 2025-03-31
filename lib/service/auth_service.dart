@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService extends ChangeNotifier {
   User? currentUser() {
@@ -92,7 +93,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-void signOut() async {
+  void signOut() async {
     // 로그아웃
   }
 
@@ -123,11 +124,59 @@ void signOut() async {
     required Function() onSuccess,
     required Function(String err) onError,
   }) async {
-    // 여기에 구글 로그인 로직을 구현하세요
-  }
+    try {
+      print("요청 시작작");
+      // google 로그인 객체 생성
+      GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  // TODO: [Week3 과제 2-2] 카카오 로그인 및 Firebase 연동 메서드 구현
-  /*
+      // google 계정 선택을 위해 로그인 요청
+      GoogleSignInAccount? _account = await _googleSignIn.signIn();
+
+      if (_account == null) {
+        onError('Google 로그인 취소됨');
+        return;
+      }
+
+      // 인증정보 가져오기
+      GoogleSignInAuthentication _authentication =
+          await _account.authentication;
+
+      // firebase 로그인 자격 증명 생성
+      OAuthCredential _googleCredential = GoogleAuthProvider.credential(
+        idToken: _authentication.idToken,
+        accessToken: _authentication.accessToken,
+      );
+
+      // firebase 인증
+      UserCredential _credential =
+          await FirebaseAuth.instance.signInWithCredential(_googleCredential);
+
+      // 로그인 성공
+      if (_credential.user != null) {
+        onSuccess();
+      } else {
+        onError('사용자 정보가 없습니다.');
+      }
+    } catch (e) {
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'account-exists-with-different-credential':
+            onError('이미 다른 방법으로 가입된 이메일입니다.');
+            break;
+          case 'operation-not-allowed':
+            onError('Firebase에서 Google 로그인을 지원하지 않습니다.');
+            break;
+          default:
+            onError('로그인 중 오류가 발생했습니다.');
+            break;
+        }
+      } else {
+        onError('로그인 중 알 수 없는 오류가 발생했습니다.');
+      }
+    }
+
+    // TODO: [Week3 과제 2-2] 카카오 로그인 및 Firebase 연동 메서드 구현
+    /*
    * 카카오 로그인 및 Firebase 연동 메서드
    *
    * 구현 단계:
@@ -149,10 +198,11 @@ void signOut() async {
    *    - 성공 시 onSuccess 콜백 호출
    *    - 실패 시 오류 내용에 따라 구분하여 onError 콜백 호출
    */
-  Future<void> signInWithKakao({
-    required Function() onSuccess,
-    required Function(String err) onError,
-  }) async {
-    // 여기에 카카오 로그인 로직을 구현하세요
+    Future<void> signInWithKakao({
+      required Function() onSuccess,
+      required Function(String err) onError,
+    }) async {
+      // 여기에 카카오 로그인 로직을 구현하세요
+    }
   }
 }
