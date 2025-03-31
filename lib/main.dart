@@ -8,6 +8,7 @@ import 'package:eos_advance_login/screens/login_screen.dart';
 import 'package:eos_advance_login/theme/light_theme.dart';
 import 'package:eos_advance_login/theme/foundation/app_theme.dart';
 import 'package:provider/provider.dart';
+import 'package:kakao_flutter_sdk_user/src/model/user.dart' as kakao_user;
 
 // TODO: [Week2 과제 1-1] Firebase 초기화 코드 구현 (finish)
 /*

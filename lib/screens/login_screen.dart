@@ -629,11 +629,46 @@ class _LoginScreenState extends State<LoginScreen> {
      *    - 오류 발생 시 적절한 피드백 제공
      */
     _showLoginMessage(context, '카카오');
+    Provider.of<AuthService>(context, listen: false).signInWithKakao(
+      onSuccess: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('카카오 로그인 성공')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      },
+      onError: (err) {
+        // 에러 발생
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('카카오 로그인 실패: $err')),
+        );
+      },
+    );
+
+    // Provider.of<AuthService>(context, listen: false).signInWithKakao(
+    //   onSuccess: () {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('구글 로그인 성공')),
+    //     );
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(builder: (context) => const HomeScreen()),
+    //     );
+    //   },
+    //   onError: (err) {
+    //     // 에러 발생
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('구글 로그인 실패: $err')),
+    //     );
+    //   },
+    // );
   }
 
   /// 구글 로그인 처리 메서드 (week3)
   void _handleGoogleLogin(BuildContext context) {
-    // TODO: [과제 1-3] 구글 로그인 구현
+    // TODO: [과제 1-3] 구글 로그인 구현 (finish)
     /*
      * 구글 로그인 및 Firebase 연동 과제
      * 
@@ -655,7 +690,7 @@ class _LoginScreenState extends State<LoginScreen> {
      *    - 재시도 옵션 제공 (선택사항)
      */
 
-    _showLoginMessage(context, '구글글');
+    _showLoginMessage(context, '구글');
 
     Provider.of<AuthService>(context, listen: false).signInWithGoogle(
       onSuccess: () {

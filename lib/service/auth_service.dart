@@ -1,10 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 class AuthService extends ChangeNotifier {
-  User? currentUser() {
+  Future<dynamic> currentUser() async {
     // 현재 유저(로그인 되지 않은 경우 null 반환)
+    return FirebaseAuth.instance.currentUser;
   }
 
   void signUp({
@@ -97,7 +103,7 @@ class AuthService extends ChangeNotifier {
     // 로그아웃
   }
 
-  // TODO: [Week3 과제 1-2] Google 로그인 및 Firebase 연동 메서드 구현
+  // TODO: [Week3 과제 1-2] Google 로그인 및 Firebase 연동 메서드 구현 (finish)
   /*
    * Google 로그인 및 Firebase 연동 메서드
    *
@@ -125,7 +131,6 @@ class AuthService extends ChangeNotifier {
     required Function(String err) onError,
   }) async {
     try {
-      print("요청 시작작");
       // google 로그인 객체 생성
       GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -174,8 +179,9 @@ class AuthService extends ChangeNotifier {
         onError('로그인 중 알 수 없는 오류가 발생했습니다.');
       }
     }
+  }
 
-    // TODO: [Week3 과제 2-2] 카카오 로그인 및 Firebase 연동 메서드 구현
+    // TODO: [week3 과제 2-2] 카카오 로그인 및 Firebase 연동 메서드 구현
     /*
    * 카카오 로그인 및 Firebase 연동 메서드
    *
@@ -198,11 +204,54 @@ class AuthService extends ChangeNotifier {
    *    - 성공 시 onSuccess 콜백 호출
    *    - 실패 시 오류 내용에 따라 구분하여 onError 콜백 호출
    */
-    Future<void> signInWithKakao({
+  Future<void> signInWithKakao({
       required Function() onSuccess,
       required Function(String err) onError,
     }) async {
       // 여기에 카카오 로그인 로직을 구현하세요
+
+      try {
+        KakaoSdk.init(nativeAppKey: "3e0d92231cecc551fdf6245df9c747c2");
+
+        bool isInstalled = await isKakaoTalkInstalled();
+        OAuthToken token = isInstalled
+            ? await UserApi.instance.loginWithKakaoTalk()
+            : await UserApi.instance.loginWithKakaoAccount();
+
+        // final response = await http.post(
+        //   Uri.parse('https://YOUR_FIREBASE_CLOUD_FUNCTION_URL'),
+        //   headers: {
+        //     HttpHeaders.contentTypeHeader: "application/json",
+        //   },
+        //   body: jsonEncode({
+        //     "token": token.accessToken, // 카카오 액세스 토큰 전달
+        //   }),
+        // );
+        final response = await http.get(
+          Uri.https('kapi.kakao.com', '/v2/user/me'),
+          headers: {
+            HttpHeaders.authorizationHeader: 'Bearer \${token.accessToken}'
+          },
+        );
+
+        if (response.statusCode != 200) {
+          throw Exception("Firebase 서버에서 토큰을 가져오지 못함: ${response.body}");
+        }
+
+        final responseData = jsonDecode(response.body);
+        String firebaseCustomToken = responseData["firebase_token"];
+
+        // 4. Firebase 로그인 진행
+        await FirebaseAuth.instance.signInWithCustomToken(firebaseCustomToken);
+
+        print("Firebase 로그인 성공!");
+
+        // 5. 성공 콜백 호출
+        onSuccess();
+      } catch (e) {
+        print("카카오 로그인 및 Firebase 연동 실패: $e");
+        onError(e.toString());
+      }
     }
-  }
+  
 }
